@@ -1,4 +1,4 @@
-use std::io;
+use std::{collections::HashMap, io};
 fn get_input() -> Option<String> {
     let mut buffer = String::new();
 
@@ -30,20 +30,33 @@ pub struct Student {
 }
 
 pub struct Students {
-    class: Vec<Student>,
+    class: HashMap<String, Student>,
 }
 
 impl Students {
     fn new() -> Self {
-        Self { class: Vec::new() }
+        Self { class: HashMap::new() }
     }
 
     fn add(&mut self, student: Student) {
-        self.class.push(student);
+        self.class.insert(student.name.to_string(), student);
     }
 
     fn view_all(&self) -> Vec<&Student> {
-        self.class.iter().collect()
+        self.class.values().collect()
+    }
+
+    fn remove(&mut self, name: &str) -> bool {
+        self.class.remove(name).is_some()
+    }
+
+    fn edit(&mut self, name: &str, age: u8) -> bool {
+        if let Some(student) = self.class.get_mut(name) {
+            student.age = age;
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -73,6 +86,39 @@ mod manager {
             println!("Name: {}", student.name);
             println!("Age: {}", student.age);
             println!("===========================================");
+        }
+    }
+
+    pub fn delete(students: &mut Students) {
+        println!("Enter student name: ");
+        let name = match get_input() {
+            Some(input) => input,
+            None => return,
+        };
+        let removed = students.remove(&name);
+        if removed {
+            println!("Student removed");
+        } else {
+            println!("Student not found");
+        }
+    }
+
+    pub fn edit(students: &mut Students) {
+        println!("Enter student name: ");
+        let name = match get_input() {
+            Some(input) => input,
+            None => return,
+        };
+        println!("Enter student age: ");
+        let age = match get_u8() {
+            Some(number) => number,
+            None => return,
+        };
+        let edited = students.edit(&name, age);
+        if edited {
+            println!("Student edited");
+        } else {
+            println!("Student not found");
         }
     }
 }
@@ -116,8 +162,8 @@ fn main() {
         match Manager::choice(&input.as_str()) {
             Some(Manager::AddStudent) => manager::add_student(&mut students),
             Some(Manager::ViewStudent) => manager::view_all(&students),
-            Some(Manager::EditStudent) => (),
-            Some(Manager::DeleteStudent) => (),
+            Some(Manager::EditStudent) => manager::edit(&mut students),
+            Some(Manager::DeleteStudent) => manager::delete(&mut students),
             None => return,
         }
     }
