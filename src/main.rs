@@ -90,6 +90,10 @@ mod manager {
     }
 
     pub fn delete(students: &mut Students) {
+        if students.view_all().is_empty() {
+            println!("No students to remove");
+            return;
+        }
         println!("Enter student name: ");
         let name = match get_input() {
             Some(input) => input,
@@ -104,6 +108,10 @@ mod manager {
     }
 
     pub fn edit(students: &mut Students) {
+        if students.view_all().is_empty() {
+            println!("No students to edit");
+            return;
+        }
         println!("Enter student name: ");
         let name = match get_input() {
             Some(input) => input,
