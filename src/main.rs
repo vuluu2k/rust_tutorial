@@ -160,7 +160,7 @@ impl Manager {
     }
 }
 
-fn main() {
+fn run_program() {
     let mut students = Students::new();
 
     loop {
@@ -172,7 +172,13 @@ fn main() {
             Some(Manager::ViewStudent) => manager::view_all(&students),
             Some(Manager::EditStudent) => manager::edit(&mut students),
             Some(Manager::DeleteStudent) => manager::delete(&mut students),
-            None => return,
+            None => break ,
         }
     }
+}
+    
+
+fn main() {
+    run_program(); 
+    println!("exit program")   
 }
